@@ -51,7 +51,7 @@ Gerçek hayat senaryolarına uygun olacak şekilde **temiz mimari (Clean Archite
 ### 1. Projeyi Klonla
 
 ```bash
-git clone https://github.com/kullaniciadi/blog-system.git
+git clone https://github.com/ahmtdgru-developer/blog-system.git
 cd blog-system
 ```
 
