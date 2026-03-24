@@ -198,17 +198,21 @@ onMounted(() => {
             class="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 transition hover:-translate-y-0.5 hover:border-zinc-300"
           >
             <div class="relative h-52 bg-zinc-200">
-              <img
-                v-if="post.cover_image_url"
-                :src="post.cover_image_url"
-                :alt="post.title"
-                class="h-full w-full object-cover"
-              />
-              <div
-                v-else
-                class="flex h-full items-center justify-center bg-gradient-to-br from-zinc-200 to-zinc-300 text-sm font-medium text-zinc-500"
-              >
-                Kapak görseli yok
+              <div class="flex h-full items-center justify-center bg-zinc-100 p-6">
+                <div class="flex h-36 w-64 items-center justify-center overflow-hidden rounded-2xl bg-zinc-200">
+                  <img
+                    v-if="post.cover_image_url"
+                    :src="post.cover_image_url"
+                    :alt="post.title"
+                    class="h-full w-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-200 to-zinc-300 text-sm font-medium text-zinc-500"
+                  >
+                    Kapak görseli yok
+                  </div>
+                </div>
               </div>
 
               <div class="absolute left-4 top-4 flex items-start justify-between gap-3">
@@ -246,10 +250,19 @@ onMounted(() => {
 
                   <div class="text-right">
                     <p class="text-xs uppercase tracking-[0.2em] text-zinc-400">
-                      Kategori
+                      Kategoriler
                     </p>
-                    <p class="mt-1 text-sm font-medium text-zinc-900">
-                      {{ post.categories?.length ? post.categories.length : 0 }}
+                    <div v-if="post.categories?.length" class="mt-1 space-y-1">
+                      <p
+                        v-for="category in post.categories"
+                        :key="category.id"
+                        class="text-sm font-medium text-zinc-900"
+                      >
+                        {{ category.name }}
+                      </p>
+                    </div>
+                    <p v-else class="mt-1 text-sm font-medium text-zinc-900">
+                      -
                     </p>
                   </div>
                 </div>
