@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\Post;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdatePostRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['sometimes', 'required', 'string', 'max:255'],
+            'content' => ['sometimes', 'required', 'string'],
+            'cover_image' => ['nullable', 'string', 'max:255'],
+            'published_at' => ['nullable', 'date'],
+            'status' => ['sometimes', 'required', Rule::in([Post::STATUS_DRAFT, Post::STATUS_PUBLISHED])],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['integer', 'exists:categories,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Başlık zorunludur.',
+            'content.required' => 'İçerik zorunludur.',
+            'status.required' => 'Durum zorunludur.',
+            'status.in' => 'Durum yalnızca draft veya published olabilir.',
+            'category_ids.array' => 'Kategoriler dizi formatında gönderilmelidir.',
+            'category_ids.*.exists' => 'Seçilen kategorilerden biri geçersiz.',
+        ];
+    }
+}
