@@ -3,9 +3,13 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineForm, field, isValidForm, toObject } from 'vue-yup-form'
 import { string } from 'yup'
-import api from '../api'
+import AppAlert from '../components/ui/AppAlert.vue'
+import AppButton from '../components/ui/AppButton.vue'
+import AppInput from '../components/ui/AppInput.vue'
+import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
+const auth = useAuth()
 
 const errorMessage = ref('')
 const isLoading = ref(false)
@@ -39,13 +43,10 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    const payload = toObject(form)
-    const res = await api.post('/login', payload)
-
-    localStorage.setItem('token', res.data.data.token)
+    await auth.login(toObject(form))
     router.push('/')
-  } catch (e) {
-    errorMessage.value = 'Giriş başarısız. Bilgilerini kontrol et.'
+  } catch (error) {
+    errorMessage.value = auth.normalizeErrorMessage(error)
   } finally {
     isLoading.value = false
   }
@@ -60,64 +61,33 @@ const handleLogin = async () => {
       </div>
 
       <form class="space-y-4" @submit.prevent="handleLogin">
-        <p
-          v-if="errorMessage"
-          class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
-          {{ errorMessage }}
-        </p>
+        <AppAlert :message="errorMessage" />
 
-        <div>
-          <label for="login" class="mb-1 block text-sm font-medium text-zinc-700">
-            E-posta veya Telefon
-          </label>
-          <input
-            id="login"
-            v-model="form.login.$value"
-            type="text"
-            placeholder="ornek@mail.com veya 5551112233"
-            class="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none transition focus:border-zinc-900"
-            :class="{
-              'border-red-300 focus:border-red-500': submitAttempted && form.login.$errorMessages.length
-            }"
-          />
-          <p
-            v-if="submitAttempted && form.login.$errorMessages.length"
-            class="mt-2 text-sm text-red-600"
-          >
-            {{ form.login.$errorMessages[0] }}
-          </p>
-        </div>
+        <AppInput
+          id="login"
+          v-model="form.login.$value"
+          label="E-posta veya Telefon"
+          placeholder="ahmet@gmail.com veya 5551112233"
+          :error="submitAttempted ? form.login.$errorMessages[0] : ''"
+        />
 
-        <div>
-          <label for="password" class="mb-1 block text-sm font-medium text-zinc-700">
-            Şifre
-          </label>
-          <input
-            id="password"
-            v-model="form.password.$value"
-            type="password"
-            placeholder="Şifrenizi girin"
-            class="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none transition focus:border-zinc-900"
-            :class="{
-              'border-red-300 focus:border-red-500': submitAttempted && form.password.$errorMessages.length
-            }"
-          />
-          <p
-            v-if="submitAttempted && form.password.$errorMessages.length"
-            class="mt-2 text-sm text-red-600"
-          >
-            {{ form.password.$errorMessages[0] }}
-          </p>
-        </div>
+        <AppInput
+          id="password"
+          v-model="form.password.$value"
+          label="Şifre"
+          type="password"
+          placeholder="Şifrenizi girin"
+          :error="submitAttempted ? form.password.$errorMessages[0] : ''"
+        />
 
-        <button
+        <AppButton
           type="submit"
           :disabled="!canSubmit"
-          class="w-full rounded-xl bg-zinc-900 px-4 py-3 font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
+          :loading="isLoading"
+          loading-text="Giriş yapılıyor..."
         >
-          {{ isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
-        </button>
+          Giriş Yap
+        </AppButton>
       </form>
     </div>
   </div>

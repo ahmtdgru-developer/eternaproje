@@ -33,7 +33,7 @@ class AuthService
             ->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            throw new \Exception('Invalid credentials');
+            throw new \Exception('Giriş bilgileri hatalı.');
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
