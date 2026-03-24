@@ -18,7 +18,7 @@ class UpdatePostRequest extends FormRequest
         return [
             'title' => ['sometimes', 'required', 'string', 'max:255'],
             'content' => ['sometimes', 'required', 'string'],
-            'cover_image' => ['nullable', 'string', 'max:255'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'published_at' => ['nullable', 'date'],
             'status' => ['sometimes', 'required', Rule::in([Post::STATUS_DRAFT, Post::STATUS_PUBLISHED])],
             'category_ids' => ['nullable', 'array'],
@@ -31,6 +31,9 @@ class UpdatePostRequest extends FormRequest
         return [
             'title.required' => 'Başlık zorunludur.',
             'content.required' => 'İçerik zorunludur.',
+            'cover_image.image' => 'Kapak görseli geçerli bir resim olmalıdır.',
+            'cover_image.mimes' => 'Kapak görseli yalnızca jpg, jpeg, png veya webp olabilir.',
+            'cover_image.max' => 'Kapak görseli en fazla 2 MB olabilir.',
             'status.required' => 'Durum zorunludur.',
             'status.in' => 'Durum yalnızca draft veya published olabilir.',
             'category_ids.array' => 'Kategoriler dizi formatında gönderilmelidir.',

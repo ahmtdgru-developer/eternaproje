@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PUBLISHED = 'published';
@@ -20,10 +22,13 @@ class Post extends Model
         'user_id',
         'title',
         'content',
-        'cover_image',
         'slug',
         'published_at',
         'status',
+    ];
+
+    protected $appends = [
+        'cover_image_url',
     ];
 
     protected function casts(): array
@@ -46,5 +51,10 @@ class Post extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('cover_image') ?: null;
     }
 }
