@@ -30,4 +30,26 @@ class RegisterRequest extends FormRequest
             'password' => 'required|min:6'
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'required' => ':attribute alanı zorunludur.',
+            'email.email' => 'Geçerli bir e-posta adresi giriniz.',
+            'email.unique' => 'Bu e-posta adresi zaten kayıtlı.',
+            'phone.unique' => 'Bu telefon numarası zaten kayıtlı.',
+            'password.min' => 'Şifre en az :min karakter olmalıdır.',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'Ad',
+            'surname' => 'Soyadı',
+            'phone' => 'Telefon numarası',
+            'email' => 'E-posta',
+            'password' => 'Şifre',
+        ];
+    }
 }

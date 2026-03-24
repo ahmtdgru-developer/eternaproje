@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue'
+﻿import { computed, reactive } from 'vue'
 import { authService } from '../services/authService'
 
 const state = reactive({
@@ -47,6 +47,19 @@ const initialize = async () => {
   }
 }
 
+const register = async payload => {
+  const { data } = await authService.register(payload)
+  const token = data.data.token
+  const user = data.data.user
+
+  localStorage.setItem('token', token)
+  state.token = token
+  state.user = user
+  state.initialized = true
+
+  return user
+}
+
 const login = async credentials => {
   const { data } = await authService.login(credentials)
   const token = data.data.token
@@ -81,6 +94,7 @@ export const useAuth = () => {
     isInitialized: computed(() => state.initialized),
     initialize,
     fetchCurrentUser,
+    register,
     login,
     logout,
     normalizeErrorMessage

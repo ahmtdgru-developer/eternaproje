@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineForm, field, isValidForm, toObject } from 'vue-yup-form'
@@ -89,6 +89,13 @@ const handleLogin = async () => {
           Giriş Yap
         </AppButton>
       </form>
+
+      <p class="mt-6 text-center text-sm text-zinc-600">
+        Hesabın yok mu?
+        <RouterLink to="/register" class="font-medium text-zinc-900 underline underline-offset-4">
+          Kayıt Ol
+        </RouterLink>
+      </p>
     </div>
   </div>
 </template>
