@@ -23,6 +23,8 @@ const canManagePosts = computed(() => {
   return ['admin', 'writer'].includes(auth.user.value?.role)
 })
 
+const isAdmin = computed(() => auth.user.value?.role === 'admin')
+
 const managePostsLabel = computed(() => {
   return auth.user.value?.role === 'admin' ? 'Tüm Yazılar' : 'Yazılarım'
 })
@@ -102,6 +104,15 @@ onMounted(() => {
               @click="router.push('/my-posts')"
             >
               {{ managePostsLabel }}
+            </AppButton>
+
+            <AppButton
+              v-if="isAdmin"
+              variant="secondary"
+              :full-width="false"
+              @click="router.push('/categories')"
+            >
+              Kategoriler
             </AppButton>
 
             <AppButton

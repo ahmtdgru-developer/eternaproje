@@ -1,6 +1,7 @@
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import vSelect from 'vue-select'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppInput from '../components/ui/AppInput.vue'
@@ -12,6 +13,9 @@ const auth = useAuth()
 
 const errorMessage = ref('')
 const isSaving = ref(false)
+const isLoadingCategories = ref(false)
+const categories = ref([])
+const selectedCategories = ref([])
 const coverImageFile = ref(null)
 const coverImagePreview = ref('')
 
@@ -31,6 +35,19 @@ const handleCoverImageChange = event => {
   coverImagePreview.value = file ? URL.createObjectURL(file) : ''
 }
 
+const loadCategories = async () => {
+  isLoadingCategories.value = true
+
+  try {
+    const { data } = await api.get('/categories')
+    categories.value = data.data ?? []
+  } catch (error) {
+    errorMessage.value = auth.normalizeErrorMessage(error)
+  } finally {
+    isLoadingCategories.value = false
+  }
+}
+
 const createPost = async () => {
   errorMessage.value = ''
   isSaving.value = true
@@ -48,6 +65,8 @@ const createPost = async () => {
     payload.append('published_at', form.published_at)
   }
 
+  payload.append('category_ids', JSON.stringify(selectedCategories.value.map(category => category.id)))
+
   try {
     await api.post('/posts', payload)
     router.push('/my-posts')
@@ -57,6 +76,10 @@ const createPost = async () => {
     isSaving.value = false
   }
 }
+
+onMounted(() => {
+  loadCategories()
+})
 </script>
 
 <template>
@@ -71,9 +94,6 @@ const createPost = async () => {
             <h1 class="mt-2 text-3xl font-bold text-zinc-900">
               {{ pageTitle }}
             </h1>
-            <p class="mt-3 text-sm leading-6 text-zinc-600">
-              Yeni bir blog yazısını buradan oluşturabilir, kapak görselini dosya olarak yükleyebilirsin.
-            </p>
           </div>
 
           <AppButton
@@ -112,6 +132,22 @@ const createPost = async () => {
               <p class="mt-2 text-xs text-zinc-500">
                 JPG, JPEG, PNG veya WEBP. En fazla 2 MB.
               </p>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="mb-1 block text-sm font-medium text-zinc-700">
+                Kategoriler
+              </label>
+              <v-select
+                v-model="selectedCategories"
+                :options="categories"
+                label="name"
+                :multiple="true"
+                :close-on-select="false"
+                :searchable="true"
+                :loading="isLoadingCategories"
+                placeholder="Kategori ara ve seç"
+              />
             </div>
 
             <template v-if="isAdmin">

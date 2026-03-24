@@ -13,6 +13,21 @@ class StorePostRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $categoryIds = $this->input('category_ids');
+
+        if (is_string($categoryIds)) {
+            $decoded = json_decode($categoryIds, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $this->merge([
+                    'category_ids' => $decoded,
+                ]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import vSelect from 'vue-select'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppInput from '../components/ui/AppInput.vue'
@@ -14,7 +15,10 @@ const auth = useAuth()
 const errorMessage = ref('')
 const isLoading = ref(false)
 const isSaving = ref(false)
+const isLoadingCategories = ref(false)
 const post = ref(null)
+const categories = ref([])
+const selectedCategories = ref([])
 const coverImageFile = ref(null)
 const coverImagePreview = ref('')
 
@@ -54,6 +58,19 @@ const handleCoverImageChange = event => {
   coverImagePreview.value = file ? URL.createObjectURL(file) : post.value?.cover_image_url || ''
 }
 
+const loadCategories = async () => {
+  isLoadingCategories.value = true
+
+  try {
+    const { data } = await api.get('/categories')
+    categories.value = data.data ?? []
+  } catch (error) {
+    errorMessage.value = auth.normalizeErrorMessage(error)
+  } finally {
+    isLoadingCategories.value = false
+  }
+}
+
 const loadPost = async () => {
   errorMessage.value = ''
   isLoading.value = true
@@ -66,6 +83,7 @@ const loadPost = async () => {
     form.published_at = toDateTimeLocal(post.value?.published_at)
     form.status = post.value?.status ?? 'draft'
     coverImagePreview.value = post.value?.cover_image_url || ''
+    selectedCategories.value = post.value?.categories ?? []
   } catch (error) {
     errorMessage.value = auth.normalizeErrorMessage(error)
   } finally {
@@ -95,6 +113,8 @@ const savePost = async () => {
     payload.append('cover_image', coverImageFile.value)
   }
 
+  payload.append('category_ids', JSON.stringify(selectedCategories.value.map(category => category.id)))
+
   if (isAdmin.value) {
     payload.append('status', form.status)
 
@@ -113,8 +133,9 @@ const savePost = async () => {
   }
 }
 
-onMounted(() => {
-  loadPost()
+onMounted(async () => {
+  await loadCategories()
+  await loadPost()
 })
 </script>
 
@@ -130,9 +151,6 @@ onMounted(() => {
             <h1 class="mt-2 text-3xl font-bold text-zinc-900">
               {{ pageTitle }}
             </h1>
-            <p class="mt-3 text-sm leading-6 text-zinc-600">
-              Başlık, içerik ve kapak görseli bilgilerini buradan güncelleyebilirsin.
-            </p>
           </div>
 
           <AppButton
@@ -182,6 +200,22 @@ onMounted(() => {
               <p class="mt-2 text-xs text-zinc-500">
                 Yeni bir dosya seçersen mevcut kapak görseli değişir.
               </p>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="mb-1 block text-sm font-medium text-zinc-700">
+                Kategoriler
+              </label>
+              <v-select
+                v-model="selectedCategories"
+                :options="categories"
+                label="name"
+                :multiple="true"
+                :close-on-select="false"
+                :searchable="true"
+                :loading="isLoadingCategories"
+                placeholder="Kategori ara ve seç"
+              />
             </div>
 
             <template v-if="isAdmin">
