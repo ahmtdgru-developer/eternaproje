@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppNavbar from '../components/layout/AppNavbar.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
@@ -19,6 +19,49 @@ const commentError = ref('')
 const isSubmittingComment = ref(false)
 const deletingCommentId = ref(null)
 const commentContent = ref('')
+let postCommentsChannel = null
+
+const upsertApprovedComment = incomingComment => {
+  if (!post.value) {
+    return
+  }
+
+  const currentComments = Array.isArray(post.value.comments) ? [...post.value.comments] : []
+  const existingIndex = currentComments.findIndex(comment => comment.id === incomingComment.id)
+
+  if (existingIndex >= 0) {
+    const wasApproved = currentComments[existingIndex].is_approved
+    currentComments[existingIndex] = incomingComment
+
+    if (!wasApproved && incomingComment.is_approved) {
+      post.value.comments_count = Number(post.value.comments_count ?? 0) + 1
+    }
+  } else {
+    currentComments.unshift(incomingComment)
+    post.value.comments_count = Number(post.value.comments_count ?? 0) + 1
+  }
+
+  post.value.comments = currentComments.sort((left, right) => {
+    return new Date(right.created_at).getTime() - new Date(left.created_at).getTime()
+  })
+}
+
+const subscribeToPostComments = postId => {
+  if (!window.Echo || !postId) {
+    return
+  }
+
+  if (postCommentsChannel) {
+    window.Echo.leave(`posts.${route.params.post}`)
+  }
+
+  postCommentsChannel = window.Echo.private(`posts.${postId}`)
+    .listen('.comment.approved', payload => {
+      if (payload?.comment) {
+        upsertApprovedComment(payload.comment)
+      }
+    })
+}
 
 const loadPost = async () => {
   errorMessage.value = ''
@@ -27,6 +70,7 @@ const loadPost = async () => {
   try {
     const { data } = await api.get(`/posts/${route.params.post}`)
     post.value = data.data ?? null
+    subscribeToPostComments(post.value?.id)
   } catch (error) {
     errorMessage.value = auth.normalizeErrorMessage(error)
   } finally {
@@ -92,6 +136,12 @@ const formatDate = value => {
 
 onMounted(() => {
   loadPost()
+})
+
+onBeforeUnmount(() => {
+  if (window.Echo && route.params.post) {
+    window.Echo.leave(`posts.${route.params.post}`)
+  }
 })
 </script>
 

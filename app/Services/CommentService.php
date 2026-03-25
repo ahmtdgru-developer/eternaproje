@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CommentApproved;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -56,7 +57,13 @@ class CommentService
             'is_approved' => $user->role === User::ROLE_ADMIN,
         ]);
 
-        return $comment->load('user');
+        $comment->load(['user', 'post']);
+
+        if ($comment->is_approved) {
+            broadcast(new CommentApproved($comment));
+        }
+
+        return $comment;
     }
 
     public function approve(Comment $comment): Comment
@@ -65,7 +72,11 @@ class CommentService
             'is_approved' => true,
         ]);
 
-        return $comment->load(['user', 'post']);
+        $comment->load(['user', 'post']);
+
+        broadcast(new CommentApproved($comment));
+
+        return $comment;
     }
 
     public function delete(Comment $comment): void
