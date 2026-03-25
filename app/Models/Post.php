@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Post extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes;
+    use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     public const STATUS_DRAFT = 'draft';
     public const STATUS_PUBLISHED = 'published';
@@ -51,6 +53,23 @@ class Post extends Model implements HasMedia
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('post')
+            ->logOnly([
+                'user_id',
+                'title',
+                'content',
+                'slug',
+                'published_at',
+                'status',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn (string $eventName) => "post_{$eventName}");
     }
 
     public function getCoverImageUrlAttribute(): ?string
