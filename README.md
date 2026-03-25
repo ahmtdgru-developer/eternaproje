@@ -1,170 +1,189 @@
-<p align="center">
-  <a href="https://laravel.com" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
-  </a>
-</p>
+# Eterna Blog
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/Laravel-12-red" alt="Laravel Version"></a>
-  <a href="#"><img src="https://img.shields.io/badge/PHP-8.2-blue" alt="PHP Version"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Lisans-MIT-green" alt="License"></a>
-</p>
+Laravel 12 ve Vue 3 Composition API kullanılarak geliştirilen blog yönetim sistemi.
 
----
-
-## Proje Hakkında
-
-Bu proje, **Laravel 12** kullanılarak geliştirilmiş bir **Blog Yönetim Sistemi**dir.
-
-Gerçek hayat senaryolarına uygun olacak şekilde **temiz mimari (Clean Architecture)** prensipleri uygulanmıştır.
-
----
-
-## Özellikler
-
-* Kullanıcı kayıt / giriş / çıkış (Register / Login / Logout)
-* Rol bazlı yetkilendirme (admin, yazar, kullanıcı)
-* Blog yazısı yönetimi (CRUD)
-* Kategori yönetimi
-* Yorum sistemi (onay mekanizmalı)
-* Öne çıkan yazılar algoritması
-* Bildirim sistemi (mail, database, broadcast)
-* Activity log (model değişiklik takibi)
-* Dosya yükleme (Media Library)
-
----
+Bu proje, Laravel içine gömülü Vue yapısı ile çalışır. Inertia kullanılmaz. Frontend, API endpoint'leri ile doğrudan haberleşir.
 
 ## Kullanılan Teknolojiler
 
-* Laravel 12
-* Laravel Sanctum (API Authentication)
-* MySQL
-* Spatie Media Library
-* Spatie Activity Log
-* Laravel Reverb (Broadcast)
-* Vue 3 + TailwindCSS (opsiyonel frontend)
+### Backend
+- Laravel 12
+- Laravel Sanctum
+- Spatie Media Library
+- MySQL
 
----
+### Frontend
+- Vue 3 Composition API
+- Vue Router
+- Tailwind CSS
+- vue-yup-form
+- vue-select
+- vue-the-mask
+- Axios
+
+## Mevcut Özellikler
+
+- Kullanıcı kayıt, giriş ve çıkış işlemleri
+- E-posta veya telefon ile giriş
+- Rol yapısı: `admin`, `writer`, `user`
+- Yetkilendirme için policy kullanımı
+- Blog yazısı oluşturma, listeleme, güncelleme ve silme
+- Kapak görseli yükleme
+- Kategori oluşturma, listeleme, güncelleme ve silme
+- Yorum ekleme
+- Admin için yorum onaylama ve silme
+- Dashboard ekranı
+- Yazı detay sayfası
+- Seed data
+
+## Roller ve Davranışlar
+
+- `admin`
+  - Tüm yazıları yönetebilir
+  - Kategorileri yönetebilir
+  - Tüm yorumları görebilir, onaylayabilir ve silebilir
+  - Yorum yazdığında yorum direkt onaylı kaydolur
+
+- `writer`
+  - Kendi yazılarını oluşturabilir, düzenleyebilir ve silebilir
+  - Yayındaki bir yazısını düzenlerse yazı tekrar taslak durumuna alınır
+  - Yorum yazabilir
+
+- `user`
+  - Yayındaki yazıları görebilir
+  - Yorum yazabilir
+  - Kendi onay bekleyen yorumunu silebilir
 
 ## Kurulum
 
-### 1. Projeyi Klonla
+### 1. Depoyu klonla
 
 ```bash
-git clone https://github.com/ahmtdgru-developer/blog-system.git
-cd blog-system
+git clone <repo-url>
+cd eternaproje
 ```
 
----
-
-### 2. Bağımlılıkları Yükle
+### 2. PHP bağımlılıklarını yükle
 
 ```bash
 composer install
 ```
 
----
-
-### 3. Ortam Dosyasını Ayarla
+### 3. JavaScript bağımlılıklarını yükle
 
 ```bash
-cp .env.example .env
+npm install
 ```
 
-`.env` dosyasını düzenle:
+### 4. Ortam dosyasını hazırla
 
-```env
-DB_DATABASE=blog_system
-DB_USERNAME=root
-DB_PASSWORD=
+```bash
+copy .env.example .env
 ```
 
----
+`.env` içinde veritabanı ayarlarını güncelle.
 
-### 4. Uygulama Anahtarı Oluştur
+### 5. Uygulama anahtarını oluştur
 
 ```bash
 php artisan key:generate
 ```
 
----
-
-### 5. Migration Çalıştır
+### 6. Migration ve seed işlemlerini çalıştır
 
 ```bash
-php artisan migrate
+php artisan migrate:fresh --seed
 ```
 
----
+### 7. Storage link oluştur
 
-### 6. Uygulamayı Başlat
+```bash
+php artisan storage:link
+```
+
+### 8. Geliştirme ortamını başlat
 
 ```bash
 php artisan serve
 ```
 
-Uygulama şu adreste çalışır:
-
-```
-http://127.0.0.1:8000
+```bash
+npm run dev
 ```
 
----
+Uygulamayı tarayıcıda şu adresten aç:
 
-## API Kimlik Doğrulama
+- `http://127.0.0.1:8000`
 
-Bu projede **Laravel Sanctum** kullanılmaktadır.
+`npm run dev` komutu Vite geliştirme sunucusunu başlatır. Bu sunucu genelde `5173` portunu kullanır, port doluysa farklı bir port açabilir. Bu projede kullanıcı arayüzüne doğrudan Vite portundan değil, Laravel uygulamasının çalıştığı `8000` portundan girilir.
 
-### Kayıt Ol
+## Seed Hesapları
 
-```
-POST /api/register
-```
+Tüm seed kullanıcılarının şifresi:
 
-### Giriş Yap
-
-```
-POST /api/login
+```text
+password
 ```
 
-### Çıkış Yap
+Hazır hesaplar:
 
-```
-POST /api/logout
-```
+- `admin@eterna.test`
+- `writer1@eterna.test`
+- `writer2@eterna.test`
+- `user1@eterna.test`
+- `user2@eterna.test`
+- `user3@eterna.test`
 
-Korunan endpoint’ler için header:
+## API Endpoint Özeti
 
-```
-Authorization: Bearer {token}
-```
+### Auth
+- `POST /api/register`
+- `POST /api/login`
+- `POST /api/logout`
+- `GET /api/me`
 
----
+### Posts
+- `GET /api/posts`
+- `GET /api/posts/{post}`
+- `GET /api/my-posts`
+- `GET /api/my-posts/{post}`
+- `POST /api/posts`
+- `PUT /api/posts/{post}`
+- `PATCH /api/posts/{post}`
+- `DELETE /api/posts/{post}`
 
-## Proje Yapısı
+### Categories
+- `GET /api/categories`
+- `POST /api/categories`
+- `PUT /api/categories/{category}`
+- `PATCH /api/categories/{category}`
+- `DELETE /api/categories/{category}`
 
-```
-app/
- ├── Http/Controllers/API
- ├── Services
- ├── Models
- ├── Policies
-```
+### Comments
+- `GET /api/comments`
+- `GET /api/comments/pending`
+- `PATCH /api/comments/{comment}/approve`
+- `DELETE /api/comments/{comment}`
+- `GET /api/posts/{post}/comments`
+- `POST /api/posts/{post}/comments`
 
-* Controller → request yönetimi
-* Service → business logic
-* Model → veri katmanı
+## Frontend Sayfaları
 
----
+- `/login`
+- `/register`
+- `/`
+- `/posts/:post`
+- `/my-posts`
+- `/my-posts/create`
+- `/my-posts/:post/edit`
+- `/categories`
+- `/categories/create`
+- `/categories/:category/edit`
+- `/comments`
 
 ## Notlar
 
-* `.env` dosyası güvenlik nedeniyle repoya eklenmemiştir
-* MySQL kullanılması önerilir
-* Projede clean architecture yaklaşımı uygulanmıştır
-
----
-
-## Lisans
-
-Bu proje MIT lisansı ile açık kaynak olarak sunulmaktadır.
+- Kapak görselleri Spatie Media Library ile yönetilir.
+- API isteklerinde Sanctum bearer token kullanılır.
+- Frontend tarafında auth kontrolü route guard ile yapılır.
+- Admin dışındaki kullanıcılar kategori ve yorum yönetim ekranlarına erişemez.
