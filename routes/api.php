@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/featured-posts', [PostController::class, 'featured']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
     Route::get('/my-posts', [PostController::class, 'myPosts']);
     Route::get('/my-posts/{post}', [PostController::class, 'showMine']);

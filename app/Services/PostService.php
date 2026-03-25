@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -12,6 +13,55 @@ use Illuminate\Support\Str;
 
 class PostService
 {
+    public function listFeatured(): Collection
+    {
+        $now = Carbon::now();
+        $last24Hours = $now->copy()->subDay();
+        $last7Days = $now->copy()->subDays(7);
+
+        $commentStatsQuery = Comment::query()
+            ->selectRaw('post_id')
+            ->selectRaw(
+                'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as comments_last_24h_count',
+                [$last24Hours]
+            )
+            ->selectRaw(
+                'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as comments_last_7d_count',
+                [$last7Days]
+            )
+            ->selectRaw('COUNT(*) as comments_total_count')
+            ->where('is_approved', true)
+            ->groupBy('post_id');
+
+        return Post::query()
+            ->select('posts.*')
+            ->leftJoinSub($commentStatsQuery, 'comment_stats', function ($join) {
+                $join->on('comment_stats.post_id', '=', 'posts.id');
+            })
+            ->selectRaw('COALESCE(comment_stats.comments_total_count, 0) as comments_count')
+            ->selectRaw(
+                '
+                (
+                    (COALESCE(comment_stats.comments_last_24h_count, 0) * 5)
+                    + (COALESCE(comment_stats.comments_last_7d_count, 0) * 3)
+                    + COALESCE(comment_stats.comments_total_count, 0)
+                    + CASE
+                        WHEN posts.published_at >= ? THEN 20
+                        WHEN posts.published_at >= ? THEN 10
+                        WHEN posts.published_at >= ? THEN 5
+                        ELSE 0
+                    END
+                ) as score
+                ',
+                [$last24Hours, $now->copy()->subDays(3), $last7Days]
+            )
+            ->with(['user', 'categories'])
+            ->where('status', Post::STATUS_PUBLISHED)
+            ->orderByDesc('score')
+            ->limit(5)
+            ->get();
+    }
+
     public function listPublished(): Collection
     {
         return Post::query()

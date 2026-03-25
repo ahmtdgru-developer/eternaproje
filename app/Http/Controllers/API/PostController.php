@@ -25,6 +25,14 @@ class PostController extends Controller
         ]);
     }
 
+    public function featured(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => PostResource::collection($this->postService->listFeatured()),
+        ]);
+    }
+
     public function myPosts(Request $request): JsonResponse
     {
         $this->authorize('viewAnyManaged', Post::class);

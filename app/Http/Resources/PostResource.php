@@ -19,6 +19,7 @@ class PostResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at,
             'comments_count' => $this->comments_count ?? 0,
+            'score' => $this->score ?? null,
             'author' => new UserSummaryResource($this->whenLoaded('user')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'comments' => CommentResource::collection($this->whenLoaded('comments')),
