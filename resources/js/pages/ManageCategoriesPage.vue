@@ -72,15 +72,34 @@ onMounted(() => {
     <div class="px-4 py-10">
       <div class="mx-auto max-w-5xl space-y-6">
         <section class="rounded-3xl border border-zinc-200 bg-white p-8 shadow-xl">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-end">
-            <AppButton
-              variant="secondary"
-              :full-width="false"
-              :disabled="isLoading"
-              @click="loadCategories"
-            >
-              Yenile
-            </AppButton>
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
+                Kategori Listesi
+              </p>
+              <h1 class="mt-2 text-3xl font-bold text-zinc-900">
+                Kategoriler
+              </h1>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <AppButton
+                variant="secondary"
+                :full-width="false"
+                @click="router.push('/categories/create')"
+              >
+                Kategori Ekle
+              </AppButton>
+
+              <AppButton
+                variant="secondary"
+                :full-width="false"
+                :disabled="isLoading"
+                @click="loadCategories"
+              >
+                Yenile
+              </AppButton>
+            </div>
           </div>
 
           <div class="mt-6 space-y-3">
@@ -88,21 +107,7 @@ onMounted(() => {
             <AppAlert :message="successMessage" variant="success" />
           </div>
 
-          <div class="mt-8 flex items-center justify-between gap-4">
-            <p class="text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
-              Kategoriler
-            </p>
-
-            <AppButton
-              variant="secondary"
-              :full-width="false"
-              @click="router.push('/categories/create')"
-            >
-              Kategori Ekle
-            </AppButton>
-          </div>
-
-          <div class="mt-4 overflow-hidden rounded-2xl border border-zinc-200">
+          <div class="mt-8 overflow-hidden rounded-2xl border border-zinc-200">
             <div class="grid grid-cols-12 gap-4 bg-zinc-50 px-5 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
               <div class="col-span-12 md:col-span-5">Kategori Adı</div>
               <div class="col-span-12 md:col-span-4">Slug</div>

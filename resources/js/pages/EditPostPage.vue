@@ -32,7 +32,7 @@ const form = reactive({
 
 const isAdmin = computed(() => auth.user.value?.role === 'admin')
 const isWriterEditingPublished = computed(() => !isAdmin.value && post.value?.status === 'published')
-const pageTitle = computed(() => isAdmin.value ? 'Yazıyı Düzenle' : 'Yazımı Düzenle')
+const pageTitle = computed(() => (isAdmin.value ? 'Yazıyı Düzenle' : 'Yazımı Düzenle'))
 
 const toDateTimeLocal = value => {
   if (!value) return ''
@@ -90,7 +90,9 @@ const savePost = async () => {
 
   if (isWriterEditingPublished.value) {
     const confirmed = window.confirm('Devam ederseniz bu yazı taslak durumuna alınacaktır. Devam etmek istiyor musunuz?')
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
   }
 
   isSaving.value = true
@@ -107,6 +109,7 @@ const savePost = async () => {
 
   if (isAdmin.value) {
     payload.append('status', form.status)
+
     if (form.published_at) {
       payload.append('published_at', form.published_at)
     }

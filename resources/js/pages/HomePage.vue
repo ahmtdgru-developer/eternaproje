@@ -112,7 +112,7 @@ onMounted(() => {
               :key="item"
               class="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50"
             >
-              <div class="h-48 animate-pulse bg-zinc-200"></div>
+              <div class="h-52 animate-pulse bg-zinc-200"></div>
               <div class="p-5">
                 <div class="h-4 w-24 animate-pulse rounded bg-zinc-200"></div>
                 <div class="mt-4 h-6 w-3/4 animate-pulse rounded bg-zinc-200"></div>
@@ -130,22 +130,18 @@ onMounted(() => {
               :key="post.id"
               class="flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 transition hover:-translate-y-0.5 hover:border-zinc-300"
             >
-              <div class="relative h-52 bg-zinc-200">
-                <div class="flex h-full items-center justify-center bg-zinc-100 p-6">
-                  <div class="flex h-36 w-64 items-center justify-center overflow-hidden rounded-2xl bg-zinc-200">
-                    <img
-                      v-if="post.cover_image_url"
-                      :src="post.cover_image_url"
-                      :alt="post.title"
-                      class="h-full w-full object-cover"
-                    />
-                    <div
-                      v-else
-                      class="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-200 to-zinc-300 text-sm font-medium text-zinc-500"
-                    >
-                      Kapak görseli yok
-                    </div>
-                  </div>
+              <div class="relative h-52 overflow-hidden bg-zinc-200">
+                <img
+                  v-if="post.cover_image_url"
+                  :src="post.cover_image_url"
+                  :alt="post.title"
+                  class="h-full w-full object-cover"
+                />
+                <div
+                  v-else
+                  class="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-200 to-zinc-300 text-sm font-medium text-zinc-500"
+                >
+                  Kapak görseli yok
                 </div>
 
                 <div class="absolute left-4 top-4">
@@ -169,7 +165,7 @@ onMounted(() => {
                 </p>
 
                 <div class="mt-auto pt-6">
-                  <div class="flex items-center justify-between border-t border-zinc-200 pt-4">
+                  <div class="flex items-start justify-between gap-6 border-t border-zinc-200 pt-4">
                     <div>
                       <p class="text-xs uppercase tracking-[0.2em] text-zinc-400">
                         Yazar
@@ -210,7 +206,7 @@ onMounted(() => {
               Henüz yayında yazı yok
             </p>
             <p class="mt-2 text-sm text-zinc-500">
-              İlk published içerik eklendiğinde burada listelenecek.
+              İlk içerik yayımlandığında burada listelenecek.
             </p>
           </div>
         </section>

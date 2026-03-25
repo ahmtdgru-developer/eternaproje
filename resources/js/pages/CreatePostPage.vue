@@ -28,7 +28,7 @@ const form = reactive({
 })
 
 const isAdmin = computed(() => auth.user.value?.role === 'admin')
-const pageTitle = computed(() => isAdmin.value ? 'Yeni Yazı Ekle' : 'Yeni Yazı Oluştur')
+const pageTitle = computed(() => (isAdmin.value ? 'Yeni Yazı Ekle' : 'Yeni Yazı Oluştur'))
 
 const handleCoverImageChange = event => {
   const file = event.target.files?.[0] ?? null
@@ -57,6 +57,7 @@ const createPost = async () => {
   payload.append('title', form.title)
   payload.append('content', form.content)
   payload.append('status', isAdmin.value ? form.status : 'draft')
+  payload.append('category_ids', JSON.stringify(selectedCategories.value.map(category => category.id)))
 
   if (coverImageFile.value) {
     payload.append('cover_image', coverImageFile.value)
@@ -65,8 +66,6 @@ const createPost = async () => {
   if (isAdmin.value && form.published_at) {
     payload.append('published_at', form.published_at)
   }
-
-  payload.append('category_ids', JSON.stringify(selectedCategories.value.map(category => category.id)))
 
   try {
     await api.post('/posts', payload)

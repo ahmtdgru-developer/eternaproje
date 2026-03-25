@@ -30,6 +30,7 @@ const loadCategory = async () => {
     categories.value = data.data ?? []
 
     const currentCategory = categories.value.find(item => String(item.id) === String(route.params.category))
+
     if (!currentCategory) {
       throw new Error('Kategori bulunamadı.')
     }
