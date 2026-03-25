@@ -6,6 +6,7 @@ use App\Events\CommentApproved;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\PostCommentApprovedNotification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -60,6 +61,7 @@ class CommentService
         $comment->load(['user', 'post']);
 
         if ($comment->is_approved) {
+            $this->notifyPostAuthor($comment);
             broadcast(new CommentApproved($comment));
         }
 
@@ -74,6 +76,7 @@ class CommentService
 
         $comment->load(['user', 'post']);
 
+        $this->notifyPostAuthor($comment);
         broadcast(new CommentApproved($comment));
 
         return $comment;
@@ -82,5 +85,16 @@ class CommentService
     public function delete(Comment $comment): void
     {
         $comment->delete();
+    }
+
+    private function notifyPostAuthor(Comment $comment): void
+    {
+        $postAuthor = $comment->post?->user;
+
+        if (! $postAuthor || $postAuthor->id === $comment->user_id) {
+            return;
+        }
+
+        $postAuthor->notify(new PostCommentApprovedNotification($comment));
     }
 }
