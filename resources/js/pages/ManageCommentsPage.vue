@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import AppNavbar from '../components/layout/AppNavbar.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
+import AppRowActionButton from '../components/ui/AppRowActionButton.vue'
 import api from '../services/api'
 import { useAuth } from '../composables/useAuth'
 
@@ -205,26 +206,24 @@ onMounted(() => {
                   </span>
                 </div>
 
-                <div class="col-span-6 flex gap-3 md:col-span-2 md:justify-end">
-                  <AppButton
+                <div class="col-span-6 flex gap-2 md:col-span-2 md:justify-end">
+                  <AppRowActionButton
                     v-if="!comment.is_approved"
-                    variant="secondary"
-                    :full-width="false"
                     :loading="approvingId === comment.id"
                     loading-text="Onaylanıyor..."
                     @click="approveComment(comment)"
                   >
                     Onayla
-                  </AppButton>
+                  </AppRowActionButton>
 
-                  <AppButton
-                    :full-width="false"
+                  <AppRowActionButton
+                    variant="danger"
                     :loading="deletingId === comment.id"
                     loading-text="Siliniyor..."
                     @click="deleteComment(comment)"
                   >
                     Sil
-                  </AppButton>
+                  </AppRowActionButton>
                 </div>
               </div>
             </div>

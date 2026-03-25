@@ -7,24 +7,29 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+    protected function prepareForValidation(): void
+    {
+        $login = trim((string) $this->input('login'));
+
+        if (preg_match('/^0?5\d{9}$/', $login)) {
+            $login = ltrim($login, '0');
+        }
+
+        $this->merge([
+            'login' => $login,
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             'login' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ];
     }
 }

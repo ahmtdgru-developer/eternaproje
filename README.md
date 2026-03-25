@@ -43,6 +43,7 @@ Bu proje Laravel içine gömülü Vue yapısı ile çalışır. Inertia kullanı
 - Dashboard ekranı
 - Yazı detay sayfası
 - Seed data
+- Postman collection
 
 ## Roller ve Davranışlar
 
@@ -152,6 +153,18 @@ Hazır hesaplar:
 - `user2@eterna.test`
 - `user3@eterna.test`
 
+## Telefon Formatı
+
+Sistemde telefon numaraları `0` olmadan tutulur.
+
+Örnek doğru format:
+
+```text
+5551112233
+```
+
+Register sırasında kullanıcı `0555...` formatında giriş yapsa bile backend değeri normalize ederek `555...` olarak kaydeder. Login tarafında da telefon numarası `0` ile ya da `0` olmadan girilebilir.
+
 ## API Endpoint Özeti
 
 ### Auth
@@ -216,6 +229,21 @@ Bu komut şu kuralla çalışır:
 - Hiç yorumu yoksa ve yayın tarihi 7 günden eskiyse yine soft delete eder
 
 Ayrıca günlük olarak scheduler üzerinden çalışacak şekilde tanımlanmıştır.
+
+## Postman Collection
+
+Collection dosyası proje içinde şu konumdadır:
+
+- `postman/EternaBlog.postman_collection.json`
+
+Postman'e import ettikten sonra collection variable olarak şunlar hazır gelir:
+- `base_url`
+- `token`
+- `post_id`
+- `comment_id`
+- `category_id`
+
+Login request'i başarılı olduğunda token otomatik olarak collection variable içine yazılır.
 
 ## Notlar
 

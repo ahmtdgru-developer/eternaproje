@@ -12,27 +12,30 @@ class AuthService
         $user = User::create([
             'name' => $data['name'],
             'surname' => $data['surname'],
-            'phone' => $data['phone'],
+            'phone' => $this->normalizePhone($data['phone']),
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => User::ROLE_USER
+            'role' => User::ROLE_USER,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
     }
 
     public function login(array $data)
     {
-        $user = User::where('email', $data['login'])
-            ->orWhere('phone', $data['login'])
+        $login = $data['login'];
+        $phoneLogin = $this->normalizePhone($login);
+
+        $user = User::where('email', $login)
+            ->orWhere('phone', $phoneLogin)
             ->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw new \Exception('Giriş bilgileri hatalı.');
         }
 
@@ -40,12 +43,19 @@ class AuthService
 
         return [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
     }
 
     public function logout($user)
     {
         $user->tokens()->delete();
+    }
+
+    private function normalizePhone(string $value): string
+    {
+        $digits = preg_replace('/\D+/', '', $value);
+
+        return ltrim($digits, '0');
     }
 }

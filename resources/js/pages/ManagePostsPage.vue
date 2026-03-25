@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import AppNavbar from '../components/layout/AppNavbar.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
+import AppRowActionButton from '../components/ui/AppRowActionButton.vue'
 import api from '../services/api'
 import { useAuth } from '../composables/useAuth'
 
@@ -175,19 +176,19 @@ onMounted(() => {
                   {{ formatDate(post.published_at) }}
                 </div>
 
-                <div class="col-span-12 flex gap-3 md:col-span-3 md:justify-end">
-                  <AppButton variant="secondary" :full-width="false" @click="openEditPage(post)">
+                <div class="col-span-12 flex gap-2 md:col-span-3 md:justify-end">
+                  <AppRowActionButton @click="openEditPage(post)">
                     Düzenle
-                  </AppButton>
+                  </AppRowActionButton>
 
-                  <AppButton
-                    :full-width="false"
+                  <AppRowActionButton
+                    variant="danger"
                     :loading="deletingId === post.id"
                     loading-text="Siliniyor..."
                     @click="deletePost(post)"
                   >
                     Sil
-                  </AppButton>
+                  </AppRowActionButton>
                 </div>
               </div>
             </div>

@@ -7,27 +7,29 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
+    protected function prepareForValidation(): void
+    {
+        $phone = preg_replace('/\D+/', '', (string) $this->input('phone'));
+        $normalizedPhone = ltrim($phone, '0');
+
+        $this->merge([
+            'phone' => $normalizedPhone,
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             'name' => 'required|string',
             'surname' => 'required|string',
-            'phone' => 'required|unique:users',
+            'phone' => 'required|regex:/^5\d{9}$/|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6'
+            'password' => 'required|min:6',
         ];
     }
 
@@ -37,6 +39,7 @@ class RegisterRequest extends FormRequest
             'required' => ':attribute alanı zorunludur.',
             'email.email' => 'Geçerli bir e-posta adresi giriniz.',
             'email.unique' => 'Bu e-posta adresi zaten kayıtlı.',
+            'phone.regex' => 'Telefon numarası 5 ile başlayan 10 haneli olmalıdır.',
             'phone.unique' => 'Bu telefon numarası zaten kayıtlı.',
             'password.min' => 'Şifre en az :min karakter olmalıdır.',
         ];

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import AppNavbar from '../components/layout/AppNavbar.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
+import AppRowActionButton from '../components/ui/AppRowActionButton.vue'
 import api from '../services/api'
 import { useAuth } from '../composables/useAuth'
 
@@ -126,19 +127,19 @@ onMounted(() => {
 
                 <div class="col-span-12 md:col-span-4 text-sm text-zinc-500">{{ category.slug }}</div>
 
-                <div class="col-span-12 flex gap-3 md:col-span-3 md:justify-end">
-                  <AppButton variant="secondary" :full-width="false" @click="openEditPage(category)">
+                <div class="col-span-12 flex gap-2 md:col-span-3 md:justify-end">
+                  <AppRowActionButton @click="openEditPage(category)">
                     Düzenle
-                  </AppButton>
+                  </AppRowActionButton>
 
-                  <AppButton
-                    :full-width="false"
+                  <AppRowActionButton
+                    variant="danger"
                     :loading="deletingId === category.id"
                     loading-text="Siliniyor..."
                     @click="deleteCategory(category)"
                   >
                     Sil
-                  </AppButton>
+                  </AppRowActionButton>
                 </div>
               </div>
             </div>

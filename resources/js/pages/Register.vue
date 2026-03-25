@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { defineForm, field, isValidForm, toObject } from 'vue-yup-form'
@@ -33,7 +33,7 @@ const form = defineForm({
     '',
     string()
       .required('Telefon numarası zorunludur.')
-      .matches(/^0\d{10}$/, 'Telefon numarası 0 ile başlayan 11 haneli olmalıdır.')
+      .matches(/^5\d{9}$/, 'Telefon numarası 5 ile başlayan 10 haneli olmalıdır.')
   ),
   email: field(
     '',
@@ -111,9 +111,9 @@ const handleRegister = async () => {
             <input
               id="phone"
               v-model="form.phone.$value"
-              v-mask="'0##########'"
+              v-mask="'##########'"
               type="tel"
-              placeholder="05551112233"
+              placeholder="5551112233"
               class="w-full rounded-xl border px-4 py-3 outline-none transition"
               :class="{
                 'border-zinc-300 focus:border-zinc-900': !(submitAttempted && form.phone.$errorMessages.length),
