@@ -63,6 +63,18 @@ Bu proje Laravel içine gömülü Vue yapısı ile çalışır. Inertia kullanı
 - Yorum yazabilir
 - Kendi onay bekleyen yorumunu silebilir
 
+## Gereksinimler
+
+Projeyi çalıştırmadan önce makinede aşağıdaki araçların kurulu olması gerekir:
+
+- PHP 8.2 veya üzeri
+- Composer 2.x
+- Node.js 20.x veya üzeri
+- npm 10.x veya üzeri
+- MySQL 8.x
+
+Kurulu değilse önce bu bağımlılıkları yükleyin, ardından aşağıdaki kurulum adımlarını uygulayın.
+
 ## Kurulum
 
 ### 1. Depoyu klonla
