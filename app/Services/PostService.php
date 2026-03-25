@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
 class PostService
@@ -16,6 +16,9 @@ class PostService
     {
         return Post::query()
             ->with(['user', 'categories'])
+            ->withCount([
+                'comments' => fn ($query) => $query->where('is_approved', true),
+            ])
             ->where('status', Post::STATUS_PUBLISHED)
             ->latest()
             ->get();
@@ -25,6 +28,7 @@ class PostService
     {
         $query = Post::query()
             ->with(['user', 'categories'])
+            ->withCount('comments')
             ->latest();
 
         if ($user->role === User::ROLE_ADMIN) {
@@ -36,10 +40,33 @@ class PostService
             ->get();
     }
 
-    public function showPublishedById(int|string $postId): Post
+    public function showPublishedById(int|string $postId, ?User $user = null): Post
     {
         return Post::query()
-            ->with(['user', 'categories', 'comments.user'])
+            ->with([
+                'user',
+                'categories',
+                'comments' => fn ($query) => $query
+                    ->where(function ($commentQuery) use ($user) {
+                        $commentQuery->where('is_approved', true);
+
+                        if ($user) {
+                            $commentQuery->orWhere('user_id', $user->id);
+                        }
+                    })
+                    ->with('user')
+                    ->latest(),
+            ])
+            ->withCount([
+                'comments' => fn ($query) => $query
+                    ->where(function ($commentQuery) use ($user) {
+                        $commentQuery->where('is_approved', true);
+
+                        if ($user) {
+                            $commentQuery->orWhere('user_id', $user->id);
+                        }
+                    }),
+            ])
             ->whereKey($postId)
             ->where('status', Post::STATUS_PUBLISHED)
             ->firstOrFail();
@@ -48,11 +75,11 @@ class PostService
     public function showManageableForUser(User $user, Post $post): Post
     {
         if ($user->role === User::ROLE_ADMIN) {
-            return $post->load(['user', 'categories', 'comments.user']);
+            return $post->load(['user', 'categories', 'comments.user'])->loadCount('comments');
         }
 
         if ($post->user_id === $user->id) {
-            return $post->load(['user', 'categories', 'comments.user']);
+            return $post->load(['user', 'categories', 'comments.user'])->loadCount('comments');
         }
 
         throw new AuthorizationException('Bu işlem için yetkiniz yok.');
@@ -79,7 +106,7 @@ class PostService
 
         $this->syncCoverImage($post, $coverImage);
 
-        return $post->load(['user', 'categories']);
+        return $post->load(['user', 'categories'])->loadCount('comments');
     }
 
     public function updateForUser(User $user, Post $post, array $data): Post
@@ -109,7 +136,7 @@ class PostService
 
         $this->syncCoverImage($post, $coverImage);
 
-        return $post->load(['user', 'categories']);
+        return $post->load(['user', 'categories'])->loadCount('comments');
     }
 
     public function deleteForUser(User $user, Post $post): void
@@ -124,7 +151,7 @@ class PostService
         $counter = 1;
 
         while (Post::query()->where('slug', $slug)->whereNull('deleted_at')->exists()) {
-            $slug = $baseSlug.'-'.$counter;
+            $slug = $baseSlug . '-' . $counter;
             $counter++;
         }
 
@@ -152,7 +179,7 @@ class PostService
 
     private function syncCoverImage(Post $post, mixed $coverImage): void
     {
-        if (! $coverImage instanceof UploadedFile) {
+        if (!$coverImage instanceof UploadedFile) {
             return;
         }
 

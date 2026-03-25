@@ -7,17 +7,21 @@ import EditPostPage from './pages/EditPostPage.vue'
 import HomePage from './pages/HomePage.vue'
 import Login from './pages/Login.vue'
 import ManageCategoriesPage from './pages/ManageCategoriesPage.vue'
+import ManageCommentsPage from './pages/ManageCommentsPage.vue'
 import ManagePostsPage from './pages/ManagePostsPage.vue'
+import PostDetailPage from './pages/PostDetailPage.vue'
 import Register from './pages/Register.vue'
 
 const routes = [
   { path: '/', component: HomePage, meta: { requiresAuth: true } },
+  { path: '/posts/:post', component: PostDetailPage, meta: { requiresAuth: true } },
   { path: '/my-posts', component: ManagePostsPage, meta: { requiresAuth: true } },
   { path: '/my-posts/create', component: CreatePostPage, meta: { requiresAuth: true } },
   { path: '/my-posts/:post/edit', component: EditPostPage, meta: { requiresAuth: true } },
   { path: '/categories', component: ManageCategoriesPage, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/categories/create', component: CreateCategoryPage, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/categories/:category/edit', component: EditCategoryPage, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: '/comments', component: ManageCommentsPage, meta: { requiresAuth: true, requiresAdmin: true } },
   { path: '/login', component: Login, meta: { guestOnly: true } },
   { path: '/register', component: Register, meta: { guestOnly: true } }
 ]

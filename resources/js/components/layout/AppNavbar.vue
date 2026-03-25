@@ -22,6 +22,7 @@ const links = computed(() => {
 
   if (auth.user.value?.role === 'admin') {
     items.push({ label: 'Kategoriler', path: '/categories' })
+    items.push({ label: 'Yorumlar', path: '/comments' })
   }
 
   return items

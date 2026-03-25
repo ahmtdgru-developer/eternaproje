@@ -18,8 +18,10 @@ class PostResource extends JsonResource
             'published_at' => $this->published_at,
             'status' => $this->status,
             'created_at' => $this->created_at,
+            'comments_count' => $this->comments_count ?? 0,
             'author' => new UserSummaryResource($this->whenLoaded('user')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
         ];
     }
 }

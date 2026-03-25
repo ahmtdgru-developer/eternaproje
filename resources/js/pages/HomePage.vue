@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AppNavbar from '../components/layout/AppNavbar.vue'
 import AppAlert from '../components/ui/AppAlert.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import api from '../services/api'
 import { useAuth } from '../composables/useAuth'
 
+const router = useRouter()
 const auth = useAuth()
 
 const isLoadingPosts = ref(false)
@@ -28,6 +30,10 @@ const loadPosts = async () => {
   } finally {
     isLoadingPosts.value = false
   }
+}
+
+const openPostDetail = post => {
+  router.push(`/posts/${post.id}`)
 }
 
 const formatDate = value => {
@@ -144,9 +150,12 @@ onMounted(() => {
                   Kapak görseli yok
                 </div>
 
-                <div class="absolute left-4 top-4">
+                <div class="absolute left-4 top-4 flex items-center gap-2">
                   <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
                     {{ post.status === 'published' ? 'Yayında' : post.status }}
+                  </span>
+                  <span class="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-zinc-700">
+                    {{ post.comments_count ?? 0 }} yorum
                   </span>
                 </div>
               </div>
@@ -163,6 +172,12 @@ onMounted(() => {
                 <p class="mt-3 text-sm leading-6 text-zinc-600">
                   {{ excerpt(post.content) }}
                 </p>
+
+                <div class="mt-6">
+                  <AppButton variant="secondary" :full-width="false" @click="openPostDetail(post)">
+                    Detaya Git
+                  </AppButton>
+                </div>
 
                 <div class="mt-auto pt-6">
                   <div class="flex items-start justify-between gap-6 border-t border-zinc-200 pt-4">

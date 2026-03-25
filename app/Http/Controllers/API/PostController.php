@@ -45,11 +45,11 @@ class PostController extends Controller
         ], 201);
     }
 
-    public function show(string $post): JsonResponse
+    public function show(Request $request, string $post): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => new PostResource($this->postService->showPublishedById($post)),
+            'data' => new PostResource($this->postService->showPublishedById($post, $request->user())),
         ]);
     }
 
